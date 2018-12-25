@@ -133,79 +133,79 @@ while(err > 1e-3)
     %% Plot
     h = figure(1);
     set(h, 'position', get(0,'ScreenSize'));
-    subplot(3, 4, 1)
+    subplot(3, 6, 1)
     plot(z, T(PREV, :))
     title('$$T$$','Interpreter','latex');
     xlabel('z / m')
     ylabel('K')
     
-    subplot(3, 4, 2)
+    subplot(3, 6, 2)
     plot(z, rho(PREV, :))
     title('$$\rho$$','Interpreter','latex');
     xlabel('z / m');
     ylabel('Kg\cdotm^{-3}');
     
-    subplot(3, 4, 3)
+    subplot(3, 6, 3)
     plot(z, u(PREV, :) );
     title('$$u$$','Interpreter','latex')
     xlabel('z / m');
     ylabel('m/s');
     
-    subplot(3, 4, 4)
+    subplot(3, 6, 4)
     plot(z, RS);
     title('$$-\sum{h_k\dot{\omega}_k}$$','Interpreter','latex')
     xlabel('z / m');
     ylabel('J\cdotm^{-3}\cdots^{-1}');
       
-    subplot(3, 4, 5)
+    subplot(3, 6, 7)
     plot(z, squeeze(Y(PREV, speciesIndex(gas, 'CH4'), :)))
     title('Y_{CH4}');
     xlabel('z / m');
     
-    subplot(3, 4, 6)
+    subplot(3, 6, 8)
     plot(z, squeeze(Y(PREV, speciesIndex(gas, 'O2'), :)))
     title('Y_{O2}');
     xlabel('z / m');
     
-    subplot(3, 4, 7)
+    subplot(3, 6, 9)
     plot(z, squeeze(Y(PREV, speciesIndex(gas, 'CO2'), :)))
     title('Y_{CO2}')
     xlabel('z / m')
     
-    subplot(3, 4, 8)
+    subplot(3, 6, 10)
     plot(z, squeeze(Y(PREV, speciesIndex(gas, 'H2O'), :)))
     title('Y_{H2O}')
     xlabel('z / m')
     
-%     subplot(3, 6, 11)
-%     plot(z, squeeze(Y(PREV, speciesIndex(gas, 'N2'), :)))
-%     title('Y_{N2}')
-%     xlabel('z / m')
-%     
-%     subplot(3, 6, 12)
-%     plot(z, squeeze(Y(PREV, speciesIndex(gas, 'NO'), :)))
-%     title('Y_{NO}')
-%     xlabel('z / m')
+    subplot(3, 6, 11)
+    plot(z, squeeze(Y(PREV, speciesIndex(gas, 'N2'), :)))
+    title('Y_{N2}')
+    xlabel('z / m')
     
-    subplot(3, 4, 9)
+    subplot(3, 6, 12)
+    plot(z, squeeze(Y(PREV, speciesIndex(gas, 'NO'), :)))
+    title('Y_{NO}')
+    xlabel('z / m')
+    
+    subplot(3, 6, 13)
     plot(z, squeeze(RR(speciesIndex(gas, 'CH4'), :)))
     title('$$\dot{\omega}_{CH_4}$$','Interpreter','latex');
     xlabel('z / m')
     ylabel('Kg\cdotm^{-3}\cdots^{-1}')
     
-    subplot(3, 4, 10)
+    subplot(3, 6, 14)
     plot(z, squeeze(RR(speciesIndex(gas, 'O2'), :)))
     title('$$\dot{\omega}_{O_2}$$','Interpreter','latex');
     xlabel('z / m')
     ylabel('Kg\cdotm^{-3}\cdots^{-1}')
 
-    subplot(3, 4, 11)
+    subplot(3, 6, 15)
     plot(z, squeeze(RR(speciesIndex(gas, 'CO2'), :)))
     title('$$\dot{\omega}_{CO_2}$$','Interpreter','latex');
     xlabel('z / m')
     ylabel('Kg\cdotm^{-3}\cdots^{-1}')
 
-    subplot(3, 4, 12)
+    subplot(3, 6, 16)
     plot(z, squeeze(RR(speciesIndex(gas, 'H2O'), :)))
     title('$$\dot{\omega}_{H_2O}$$','Interpreter','latex');
     xlabel('z / m')
@@ -294,8 +294,7 @@ while(err > 1e-3)
         leftposFlame=max(1,posFlame-Flamelayer/2.0/dz);
         rightposFlame=min(N,posFlame+Flamelayer/2.0/dz);
         RS=gsf(leftposFlame,rightposFlame,N,RS);
-        %dRS = RS_new' - RS; 
-            
+        
         dYdz = zeros(K, N);
         for k = 1:K
             dYdz(k, :) = df(Y(PREV, k, :), dz, N);
@@ -389,9 +388,10 @@ while(err > 1e-3)
     end
     %Filtering
         %TODO
-    for k=1:K
-        RR(k,:)=gsf(leftposFlame,rightposFlame,N,RR(k,:));
-    end
+        [maxT,posFlame]=max(T(PREV,:));
+        leftposFlame=max(1,posFlame-Flamelayer/2.0/dz);
+        rightposFlame=min(N,posFlame+Flamelayer/2.0/dz);
+        RS=gsf(leftposFlame,rightposFlame,N,RS);
     %Solve each species
     for k=1:K
         max_dY(k) = 1e-2 * max(Y(PREV, k, :));
